@@ -1,4 +1,28 @@
 {
-  "name": "kysely-sqlite",
-  "packageManager": "yarn@4.9.1"
+  "version": "0.0.1",
+  "name": "@azvaliev/kysely-sqlite-local",
+  "type": "commonjs",
+  "packageManager": "yarn@4.9.1",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.1.0",
+    "kysely-codegen": "^0.18.5",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "env-paths": "^3.0.0",
+    "kysely": "^0.28.3"
+  },
+  "main": "index.js",
+  "types": "types.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    }
+  },
+  "bin": {
+    "kysely-sqlite-codegen": "./codegen.js"
+  }
 }
