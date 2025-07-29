@@ -1,5 +1,5 @@
 {
-  "version": "0.0.5",
+  "version": "0.1.0",
   "license": "MIT",
   "name": "@azvaliev/kysely-sqlite-local",
   "type": "commonjs",
@@ -7,7 +7,8 @@
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "find . -name '*.d.ts' -not -path './node_modules/*' -type f -exec rm -rf {} + && tsc",
+    "clean": "find . -name '*.d.ts*' -not -path './node_modules/*' -type f -exec rm -rf {} +",
+    "build": "yarn clean && tsc",
     "publish": "yarn build && yarn npm publish --access public"
   },
   "devDependencies": {
@@ -29,6 +30,11 @@
       "import": "./index.js",
       "require": "./index.js",
       "types": "./index.d.ts"
+    },
+    "./kysely": {
+      "import": "./kysely.js",
+      "require": "./kysely.js",
+      "types": "./kysely.d.ts"
     }
   },
   "bin": {
