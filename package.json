@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "name": "@azvaliev/kysely-sqlite-local",
   "type": "commonjs",
@@ -25,7 +25,8 @@
   "exports": {
     ".": {
       "import": "./index.js",
-      "require": "./index.js"
+      "require": "./index.js",
+      "types": "./types.ts"
     }
   },
   "bin": {
