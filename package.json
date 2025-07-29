@@ -3,11 +3,16 @@
   "name": "@azvaliev/kysely-sqlite-local",
   "type": "commonjs",
   "packageManager": "yarn@4.9.1",
+  "scripts": {
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.1.0",
     "kysely-codegen": "^0.18.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",

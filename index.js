@@ -9,10 +9,12 @@ const { Kysely, SqliteDialect, CamelCasePlugin } = require('kysely');
  * @param {import('./types').InitDBOptions} options
  * @returns {Promise<import('kysely').Kysely<DB>>}
  */
-module.exports.getDB = async function getDB(options) {
-  let dbPath = options.path ?? await getDefaultDBPath(options);
+async function getDB(options) {
+  let dbPath = await getDefaultDBPath(options);
 
-  const db = new Database(dbPath, options.sqliteOptions);
+  await makeDBFolderIfNotExists(dbPath.folder);
+
+  const db = new Database(dbPath.fullDbPath, { ...options.sqliteOptions, fileMustExist: false } );
   const kysely = new Kysely({
     dialect: new SqliteDialect({
       database: db,
@@ -40,12 +42,42 @@ function getPlugins(options) {
 }
 
 /**
+ * 
+ * @param {string} folder 
+ */
+async function makeDBFolderIfNotExists(folder) {
+  const fs = await import('node:fs/promises');
+
+  const exists = await (async () => {
+    try {
+      await fs.stat(folder);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  })()
+  if (exists) return;
+
+  await fs.mkdir(folder, { recursive: true });
+}
+
+/**
  * Get the default path for the database.
- * @param {Pick<import('./types').InitDBOptions, 'databaseName' | 'applicationName'>} options 
- * @returns {Promise<string>}
+ * @param {Pick<import('./types').InitDBOptions, 'databaseName' | 'applicationName' | 'path'>} options 
+ * @returns {Promise<{ folder: string, fullDbPath: string }>}
  */
 async function getDefaultDBPath(options) {
   const path = await import('node:path');
+
+  if (options.path) {
+    const folder = path.dirname(options.path);
+
+    return {
+      folder: folder,
+      fullDbPath: options.path,
+    };
+  }
+
   const envPaths = (await import('env-paths')).default
 
   const appFolder = envPaths(options.applicationName).data;
@@ -55,5 +87,13 @@ async function getDefaultDBPath(options) {
     ''
   ) + '.sqlite';
 
-  return path.join(appFolder, normalizedDatabaseName);
+  return {
+    folder: appFolder,
+    fullDbPath: path.join(appFolder, normalizedDatabaseName),
+  };
+}
+
+module.exports = {
+  getDB,
+  getDefaultDBPath,
 }

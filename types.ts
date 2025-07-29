@@ -15,7 +15,7 @@ export interface InitDBOptions {
    * In the `env-paths` library https://www.npmjs.com/package/env-paths#usage
    * @see {getDefaultDBPath}
    */
-  path?: string;
+  path?: string | undefined;
   /**
    * Migrations to run when the database is opened
    */

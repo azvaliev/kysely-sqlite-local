@@ -1,22 +1,30 @@
 #!/usr/bin/env node
 const { generate, getDialect } = require('kysely-codegen');
 const { parseArgs } = require('node:util');
-const { getDB } = require('./index');
+const { getDefaultDBPath } = require('./index');
+const { Kysely, SqliteDialect } = require('kysely');
+const Database = require('better-sqlite3');
 
 main();
 
 async function main() {
   const args = getArgs();
 
-  const db = await getDB({
-    databaseName: args.databaseName,
-    applicationName: args.applicationName,
-    migrations: [],
-  });
-
   try { 
+    // we initialize it directly here to avoid running migrations
+    // The DB should also exist already at this point
+    const dbPath = await getDefaultDBPath({
+      databaseName: args.databaseName,
+      applicationName: args.applicationName,
+      path: args.path,
+    });
+
     const generateOut = await generate({
-      db,
+      db: new Kysely({
+        dialect: new SqliteDialect({
+          database: new Database(dbPath.fullDbPath),
+        }),
+      }),
       dialect: getDialect('sqlite'),
       outFile: args.outFile,
       camelCase: true,
@@ -31,13 +39,14 @@ async function main() {
 
 /**
  * 
- * @returns {{ databaseName: string, applicationName: string, outFile: string }}
+ * @returns {{ databaseName: string, applicationName: string, outFile: string, path: string | undefined }}
  */
 function getArgs() {
   let {
     databaseName,
     applicationName,
     outFile,
+    path,
   } = parseArgs({
     options: {
       databaseName: {
@@ -48,7 +57,10 @@ function getArgs() {
       },
       outFile: {
         type: 'string',
-      }
+      },
+      path: {
+        type: 'string',
+      },
     }
   }).values;
 
@@ -56,6 +68,7 @@ function getArgs() {
     console.log('npx kysely-sqlite-codegen --databaseName <databaseName> --applicationName <applicationName> --outFile <outFile>');
     console.log('databaseName: The name of the database to generate types for (this should match your code)');
     console.log('applicationName: The name of the application to generate types for (this should match your code)');
+    console.log('path: [OPTIONAL] The path to the database (this should match your code)');
     console.log('outFile: The file to write the types to');
     process.exit(0);
   }
@@ -77,5 +90,6 @@ function getArgs() {
     databaseName,
     applicationName,
     outFile,
+    path,
   };
 }
