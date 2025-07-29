@@ -1,5 +1,6 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "license": "MIT",
   "name": "@azvaliev/kysely-sqlite-local",
   "type": "commonjs",
   "packageManager": "yarn@4.9.1",
